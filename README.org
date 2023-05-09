@@ -1,0 +1,30 @@
+* Brucescape
+
+Brucescape Haskellgator, is the latest and most exciting of what's called a
+"web browser."  Enter into a world of endless possibilities with Brucescape -
+the revolutionary web browser that will take you on a journey into the wonders
+of the World Wide Web!  Once connected to The Internet via your home computer's
+dial-up modem, you can actually "surf" the Web, cruise the Information
+Superhighway, follow "hyper" links, participate in discussion forums, view
+animated GIFs, and leave your mark on guestbooks.  Don't wait any longer to
+blast off into the new frontier of cyberspace, get your hands on Brucescape
+Haskellgator today and embark on a journey to the future!
+
+* Usage
+
+Requires Cabal >3.4 and GHC >9.2.
+
+Run project with:
+
+#+begin_src shell
+cabal run
+#+end_src
+
+* Credits
+
+[[https://browser.engineering/][Web Browser Engineering]]: A book on how web browser internals work, of which
+this project is a Haskell implementation of the Python browser project within.
+
+* Licensing
+
+GPL version 3.0
