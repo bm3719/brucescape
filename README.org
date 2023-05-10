@@ -10,14 +10,24 @@ forums, view animated GIFs, and leave your mark on guestbooks.  Don't wait any
 longer to blast off into the new frontier of cyberspace, get your hands on
 Brucescape Haskellgator today and embark on a journey to the future!
 
-* Usage
+* Building
 
 Requires Cabal >3.4 and GHC >9.2.
+
+Create an executable with:
+
+#+begin_src shell
+cabal build
+#+end_src
+
+Output binary will appear under =dist-newstyle/...=.
+
+* Usage
 
 Run project with:
 
 #+begin_src shell
-cabal run
+cabal run brucescape <url>
 #+end_src
 
 * Credits
