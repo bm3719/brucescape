@@ -1,6 +1,6 @@
 * Brucescape
 
-Brucescape Haskellgator, is the latest and most exciting of computer programs
+Brucescape Haskellgator is the latest and most exciting of computer programs
 called /web browsers/.  Enter into a world of endless possibilities with
 Brucescape - the revolutionary web browser that will take you on a journey into
 the wonders of the World Wide Web!  Once connected to The Internet via your
