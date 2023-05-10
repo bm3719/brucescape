@@ -38,4 +38,4 @@ this project is a Haskell implementation of the Python browser project within.
 
 * Licensing
 
-GPL version 3.0
+[[LICENSE][GPL version 3.0]]
