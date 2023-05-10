@@ -12,7 +12,8 @@ Brucescape Haskellgator today and embark on a journey to the future!
 
 * Building
 
-Requires Cabal >3.4 and GHC >9.2.
+Requires Cabal >=3.4 and GHC >=9.2.  Recommend using [[https://www.haskell.org/ghcup/][ghcup]] to install the
+latest of these.
 
 Create an executable with:
 
