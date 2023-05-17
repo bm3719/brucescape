@@ -30,13 +30,13 @@ Output binary will appear under =dist-newstyle/...=.
 Run project with:
 
 #+begin_src shell
-cabal run brucescape 'http://www.example.com:8080/path/to/page?query=value#fragment'
+cabal run brucescape 'http://www.example.com'
 #+end_src
 
 To do the same from the REPL, use GHCi's dot command =:main=:
 
 #+begin_src haskell
-:main http://www.example.com:8080/path/to/page?query=value#fragment
+:main http://www.example.com
 #+end_src
 
 * Credits
