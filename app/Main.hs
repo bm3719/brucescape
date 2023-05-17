@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Main where
 
+import Data.List (intercalate)
 import Data.Maybe (fromMaybe)
-import Network.URI (parseURI, uriScheme, uriAuthority, uriRegName)
+import Network.URI (parseURI, uriScheme, uriAuthority, uriRegName, pathSegments)
 import System.Environment
 
 -- testUrl :: String
@@ -18,3 +19,4 @@ main = do
       let parsedUrl = parseURI url
       putStrLn $ "URI Scheme: " ++ (fromMaybe "Invalid URL" $ uriScheme <$> parsedUrl)
       putStrLn $ "Host: " ++ maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
+      putStrLn $ "Path: " ++ (fromMaybe "Invalid URL" $ (('/' :) . intercalate "/" . pathSegments) <$> parsedUrl)
