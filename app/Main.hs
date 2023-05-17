@@ -1,4 +1,7 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
 module Main where
 
 import Data.List (intercalate)
@@ -12,7 +15,7 @@ import System.Environment
 main :: IO ()
 main = do
   args <- getArgs
-  case args of
+  (\case
     [] -> putStrLn "No URL specified"
     url:_ -> do
       putStrLn $ "Navigating to: " ++ url
@@ -24,3 +27,4 @@ main = do
       putStrLn $ "URI Scheme: " ++ scheme
       putStrLn $ "Host: " ++ host
       putStrLn $ "Path: " ++ path
+    ) args
