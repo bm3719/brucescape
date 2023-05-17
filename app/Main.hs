@@ -10,7 +10,7 @@ import Network.URI (parseURI, uriScheme, uriAuthority, uriRegName, pathSegments)
 import System.Environment
 
 -- testUrl :: String
--- testUrl = "https://www.example.com:8080/path/to/page?query=value#fragment"
+-- testUrl = "http://www.example.com:8080/path/to/page?query=value#fragment"
 
 main :: IO ()
 main = do
