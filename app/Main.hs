@@ -50,7 +50,7 @@ main = do
       let request = "GET " ++ path ++ " HTTP/1.1\r\nHost: " ++ host ++ "\r\n\r\n"
       sendAll sock (BS.pack request)
       -- Note: Maximum size in bytes of buffer to receive statically defined.
-      --       Use Network.Socket.ByteString.Lazy.recvAll if this is an issue.
+      --       Use Network.Socket.ByteString.Lazy if this is an issue.
       response <- recv sock 4096
       putStrLn $ BS.unpack response
       close sock
