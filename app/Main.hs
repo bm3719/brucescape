@@ -4,13 +4,13 @@
 {-# LANGUAGE ViewPatterns #-}
 module Main where
 
-import Data.List (intercalate, stripPrefix)
-import Data.Maybe (fromMaybe)
-import Network.Socket
-import Network.Socket.ByteString (sendAll, recv)
-import Network.URI (parseURI, uriScheme, uriAuthority, uriRegName, pathSegments)
-import System.Environment
-import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Char8     as BS
+import           Data.List                 (intercalate, stripPrefix)
+import           Data.Maybe                (fromMaybe)
+import           Network.Socket
+import           Network.Socket.ByteString (sendAll, recv)
+import           Network.URI
+import           System.Environment
 
 -- testUrl :: String
 -- testUrl = "http://www.example.com:8080/path/to/page?query=value#fragment"
