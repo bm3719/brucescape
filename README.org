@@ -30,7 +30,7 @@ Output binary will appear under =dist-newstyle/...=.
 Run project with:
 
 #+begin_src shell
-cabal run brucescape <url>
+cabal run brucescape 'https://www.example.com:8080/path/to/page?query=value#fragment'
 #+end_src
 
 * Credits
