@@ -33,6 +33,12 @@ Run project with:
 cabal run brucescape 'https://www.example.com:8080/path/to/page?query=value#fragment'
 #+end_src
 
+To do the same from the REPL, use GHCi's dot command =:main=:
+
+#+begin_src haskell
+:main https://www.example.com:8080/path/to/page?query=value#fragment
+#+end_src
+
 * Credits
 
 [[https://browser.engineering/][Web Browser Engineering]]: A book on how web browser internals work, of which
