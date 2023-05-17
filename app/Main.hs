@@ -17,6 +17,10 @@ main = do
     url:_ -> do
       putStrLn $ "Navigating to: " ++ url
       let parsedUrl = parseURI url
-      putStrLn $ "URI Scheme: " ++ (fromMaybe "Invalid URL" $ uriScheme <$> parsedUrl)
-      putStrLn $ "Host: " ++ maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
-      putStrLn $ "Path: " ++ (fromMaybe "Invalid URL" $ (('/' :) . intercalate "/" . pathSegments) <$> parsedUrl)
+          scheme = (fromMaybe "Invalid URL" $ uriScheme <$> parsedUrl)
+          host = maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
+          path = (fromMaybe "Invalid URL" $
+                  (('/' :) . intercalate "/" . pathSegments) <$> parsedUrl)
+      putStrLn $ "URI Scheme: " ++ scheme
+      putStrLn $ "Host: " ++ host
+      putStrLn $ "Path: " ++ path
