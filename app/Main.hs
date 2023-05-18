@@ -49,8 +49,7 @@ recvAllChunks sock bufferSize = do
 -- | Main entry point and future location of event handler.
 main :: IO ()
 main = do
-  args <- getArgs
-  (\case
+  getArgs >>= \case
     [] -> putStrLn "No URL specified"
     url:_ -> do
       putStrLn $ "Navigating to: " ++ url
@@ -71,7 +70,6 @@ main = do
       response <- recvAllChunks sock 4096
       putStrLn $ word8ArrayToString $ BL.unpack $ mconcat response
       close sock
-    ) args
 
 -- testUrl1 = "http://www.example.com:8080/path/to/page?query=value#fragment"
 -- testUrl2 = "http://www.example.com"                           -- small HTTP page
