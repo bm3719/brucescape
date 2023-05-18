@@ -4,11 +4,11 @@
 {-# LANGUAGE ViewPatterns #-}
 module Main where
 
-import qualified Data.ByteString.Char8         as BS (pack)
-import qualified Data.ByteString.Lazy          as BL
-import           Data.Char                     (chr)
-import           Data.List                     as DL (intercalate, stripPrefix)
-import           Data.Maybe                    (fromMaybe)
+import qualified Data.ByteString.Char8          as BS (pack)
+import qualified Data.ByteString.Lazy           as BL
+import           Data.Char                      (chr)
+import           Data.List                      as DL (intercalate, stripPrefix)
+import           Data.Maybe                     (fromMaybe)
 import           GHC.Int
 import qualified GHC.Word as W
 import           Network.Socket
