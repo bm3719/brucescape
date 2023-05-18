@@ -10,7 +10,7 @@ import           Data.Char                      (chr)
 import           Data.List                      as DL (intercalate, stripPrefix)
 import           Data.Maybe                     (fromMaybe)
 import           GHC.Int
-import qualified GHC.Word as W
+import qualified GHC.Word                       as W
 import           Network.Socket
 import           Network.Socket.ByteString      (sendAll)
 import qualified Network.Socket.ByteString.Lazy as BSL (recv)
