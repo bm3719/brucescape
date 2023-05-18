@@ -4,16 +4,18 @@
 {-# LANGUAGE ViewPatterns #-}
 module Main where
 
-import qualified Data.ByteString.Char8     as BS
-import           Data.List                 (intercalate, stripPrefix)
-import           Data.Maybe                (fromMaybe)
+import qualified Data.ByteString.Char8         as BS (pack)
+import qualified Data.ByteString.Lazy          as BL
+import           Data.Char                     (chr)
+import           Data.List                     as DL (intercalate, stripPrefix)
+import           Data.Maybe                    (fromMaybe)
+import           GHC.Int
+import qualified GHC.Word as W
 import           Network.Socket
-import           Network.Socket.ByteString (sendAll, recv)
-import           Network.URI
+import           Network.Socket.ByteString      (sendAll)
+import qualified Network.Socket.ByteString.Lazy as BSL (recv)
+import           Network.URI                    hiding (scheme, path)
 import           System.Environment
-
--- testUrl :: String
--- testUrl = "http://www.example.com:8080/path/to/page?query=value#fragment"
 
 createSocket :: String -> String -> IO (Socket, AddrInfo)
 createSocket scheme host = do
@@ -23,11 +25,28 @@ createSocket scheme host = do
   return (sock, addr)
 
 stripSuffix :: String -> String -> Maybe String
-stripSuffix suffix str = reverse <$> stripPrefix (reverse suffix) (reverse str)
+stripSuffix suffix str = reverse <$> DL.stripPrefix (reverse suffix) (reverse str)
 
 dropLastColon :: String -> String
 dropLastColon = fromMaybe <*> stripSuffix ":"
 
+word8ArrayToString :: [W.Word8] -> String
+word8ArrayToString = map (chr . fromIntegral)
+
+-- | Collect data from socket in multiple chunks.  This works, but blocks for
+-- awhile when the data received is less than bufferSize.  Also chunk size
+-- seems to depend on the server, not always filling the bufferSize.
+recvAllChunks :: Socket -> Int64 -> IO [BL.ByteString]
+recvAllChunks sock bufferSize = do
+  chunk <- BSL.recv sock bufferSize
+  -- putStrLn $ "chunk size: " ++ (show $ BL.length chunk)
+  if BL.length chunk == 0
+    then return [chunk]
+    else do
+      chunks <- recvAllChunks sock bufferSize
+      return (chunk : chunks)
+
+-- | Main entry point and future location of event handler.
 main :: IO ()
 main = do
   args <- getArgs
@@ -39,7 +58,7 @@ main = do
           scheme = (fromMaybe "Invalid URL" $ (dropLastColon . uriScheme) <$> parsedUrl)
           host = maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
           path = (fromMaybe "Invalid URL" $
-                  (('/' :) . intercalate "/" . pathSegments) <$> parsedUrl)
+                  (('/' :) . DL.intercalate "/" . pathSegments) <$> parsedUrl)
       putStrLn $ "URI Scheme: " ++ scheme
       putStrLn $ "Host: " ++ host
       putStrLn $ "Path: " ++ path
@@ -49,9 +68,13 @@ main = do
       connect sock (addrAddress addr)
       let request = "GET " ++ path ++ " HTTP/1.1\r\nHost: " ++ host ++ "\r\n\r\n"
       sendAll sock (BS.pack request)
-      -- Note: Maximum size in bytes of buffer to receive statically defined.
-      --       Use Network.Socket.ByteString.Lazy if this is an issue.
-      response <- recv sock 4096
-      putStrLn $ BS.unpack response
+      response <- recvAllChunks sock 4096
+      putStrLn $ word8ArrayToString $ BL.unpack $ mconcat response
       close sock
     ) args
+
+-- testUrl1 = "http://www.example.com:8080/path/to/page?query=value#fragment"
+-- testUrl2 = "http://www.example.com"                           -- small HTTP page
+-- testUrl3 = "http://eap.mcgill.ca/MagRack/COG/COG_P_96_05.htm" -- large HTTP page
+-- testUrl4 = "http://eap.mcgill.ca/MagRack/COG/cognitio.htm"    -- large HTTP page
+-- testUrl5 = "http://reduction.io/essays/rosetta-haskell.html"  -- different chunk size
