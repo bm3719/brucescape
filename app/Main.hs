@@ -58,9 +58,9 @@ main = do
           host = maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
           path = (fromMaybe "Invalid URL" $
                   (('/' :) . DL.intercalate "/" . pathSegments) <$> parsedUrl)
-      putStrLn $ "URI Scheme: " ++ scheme
-      putStrLn $ "Host: " ++ host
-      putStrLn $ "Path: " ++ path
+      -- putStrLn $ "URI Scheme: " ++ scheme
+      -- putStrLn $ "Host: " ++ host
+      -- putStrLn $ "Path: " ++ path
 
       -- Create network connection to host.
       (sock, addr) <- createSocket scheme host
@@ -68,8 +68,17 @@ main = do
       let request = "GET " ++ path ++ " HTTP/1.1\r\nHost: " ++ host ++ "\r\n\r\n"
       sendAll sock (BS.pack request)
       response <- recvAllChunks sock 4096
-      putStrLn $ word8ArrayToString $ BL.unpack $ mconcat response
       close sock
+
+      -- Handle response content.
+      let servResp = word8ArrayToString $ BL.unpack $ mconcat response
+      let linesList = lines servResp
+      let [httpVer, statusCode, statusMsg, date, server, lastMod, acceptRanges] = take 7 linesList
+      let [httpVersion, status, explanation] = take 3 $ words httpVer
+      let content = intercalate "\n" $ drop 8 linesList
+      mapM_ putStrLn [httpVersion, status, explanation, statusCode, statusMsg, date, server, lastMod, acceptRanges]
+      -- putStrLn content
+
 
 -- testUrl1 = "http://www.example.com:8080/path/to/page?query=value#fragment"
 -- testUrl2 = "http://www.example.com"                           -- small HTTP page
