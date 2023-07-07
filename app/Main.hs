@@ -75,7 +75,7 @@ main = do
       let linesList = lines servResp
       let [httpVer, statusCode, statusMsg, date, server, lastMod, acceptRanges] = take 7 linesList
       let [httpVersion, status, explanation] = take 3 $ words httpVer
-      let content = intercalate "\n" $ drop 8 linesList
+      let content = unlines $ drop 8 linesList
       mapM_ putStrLn [httpVersion, status, explanation, statusCode, statusMsg, date, server, lastMod, acceptRanges]
       -- putStrLn content
 
