@@ -39,10 +39,73 @@ To do the same from the REPL, use GHCi's dot command =:main=:
 :main http://www.example.com
 #+end_src
 
+* Random ideas
+
+Might refactor later to try out some of these ideas:
+
+** Browsing sessions as topological spaces
+
+Each browsing session can be viewed as generating a unique topological space,
+where websites are open sets in this space, and the hyperlinks behave as the
+inclusion maps between sets.
+
+The [[https://hackage.haskell.org/package/containers][containers]] library allows you to define topological spaces as open sets.
+Would then need still need to define continuous maps (functions respecting the
+topological structure).
+
+#+begin_src haskell
+-- Represent a topological space as a set of elements.
+type TopologicalSpace a = Data.Set.Set a
+
+-- Example inclusion map.
+inclusionMap :: Ord a => TopologicalSpace a -> TopologicalSpace a -> a -> Maybe a
+inclusionMap subspace largerSpace element
+  | element `Set.member` subspace = Just element
+  | otherwise = Nothing
+#+end_src
+
+** Cohomological history
+
+Browsing history could be treated as a cochain complex in the theory of
+cohomology where sites act as objects and their actions as homomorphisms. By
+calculating cohomology, we could gain insights into the "holes" in the browsing
+experience, which roughly indicate the routes taken by the user through the
+web, where they lingered, and which paths they didn't explore.
+
+No library exists for this specifically, but [[https://hackage.haskell.org/package/algebra][algebra]] can possibly provide basic
+structures to represent the chains and differentials of a cochain complex.
+
+#+begin_src haskell
+import Algebra.Chain
+import Algebra.Cochain
+import Algebra.Cohomology
+
+-- Define the types for the chain and cochain complex.
+type ChainComplex a = Chain a
+type CochainComplex a = Cochain a
+
+-- Define the differentials for the chain complex.
+d :: ChainComplex a -> ChainComplex a
+d = boundary
+
+-- Define the coboundary for the cochain complex.
+delta :: CochainComplex a -> CochainComplex a
+delta = coboundary
+
+-- Define a data type to represent cohomology groups.
+data CohomologyGroup a = CohomologyGroup Int [a]
+
+-- Compute the cohomology of a chain complex.
+cohomology :: ChainComplex a -> [CohomologyGroup a]
+cohomology chainComplex = computeCohomology chainComplex delta
+#+end_src
+
 * Credits
 
 [[https://browser.engineering/][Web Browser Engineering]]: A book on how web browser internals work, of which
 this project is a Haskell implementation of the Python browser project within.
+This project deviates in that it's a text-based browser, thereby ignoring most
+of the later content.
 
 * Licensing
 
