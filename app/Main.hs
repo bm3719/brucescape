@@ -4,47 +4,46 @@
 {-# LANGUAGE ViewPatterns #-}
 module Main where
 
-import qualified Data.ByteString.Char8          as BS (pack)
-import qualified Data.ByteString.Lazy           as BL
-import           Data.Char                      (chr)
-import           Data.List                      as DL (intercalate, stripPrefix)
-import           Data.Maybe                     (fromMaybe)
-import           GHC.Int
-import qualified GHC.Word                       as W
-import           Network.Socket
-import           Network.Socket.ByteString      (sendAll)
-import qualified Network.Socket.ByteString.Lazy as BSL (recv)
-import           Network.URI                    hiding (scheme, path)
-import           System.Environment
+-- import qualified Data.ByteString.Char8          as BS (pack)
+-- import qualified Data.ByteString.Lazy           as BL
+-- import           Data.Char                      (chr)
+-- import           Data.List                      as DL (intercalate, stripPrefix)
+-- import           Data.Maybe                     (fromMaybe)
+-- import           GHC.Int
+-- import qualified GHC.Word                       as W
+import Control.Lens
+import Data.Aeson.Lens (_String, key)
+import Network.Wreq
+import System.Environment
 
-createSocket :: String -> String -> IO (Socket, AddrInfo)
-createSocket scheme host = do
-  let hints = defaultHints { addrFlags = [AI_ADDRCONFIG], addrSocketType = Stream }
-  addr:_ <- getAddrInfo (Just hints) (Just host) (Just scheme)
-  sock <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
-  return (sock, addr)
+-- createSocket :: String -> String -> IO (Socket, AddrInfo)
+-- createSocket scheme host = do
+--   let hints = defaultHints { addrFlags = [AI_ADDRCONFIG], addrSocketType = Stream }
+--   addr:_ <- getAddrInfo (Just hints) (Just host) (Just scheme)
+--   sock <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
+--   return (sock, addr)
 
-stripSuffix :: String -> String -> Maybe String
-stripSuffix suffix str = reverse <$> DL.stripPrefix (reverse suffix) (reverse str)
+-- stripSuffix :: String -> String -> Maybe String
+-- stripSuffix suffix str = reverse <$> DL.stripPrefix (reverse suffix) (reverse str)
 
-dropLastColon :: String -> String
-dropLastColon = fromMaybe <*> stripSuffix ":"
+-- dropLastColon :: String -> String
+-- dropLastColon = fromMaybe <*> stripSuffix ":"
 
-word8ArrayToString :: [W.Word8] -> String
-word8ArrayToString = map (chr . fromIntegral)
+-- word8ArrayToString :: [W.Word8] -> String
+-- word8ArrayToString = map (chr . fromIntegral)
 
 -- | Collect data from socket in multiple chunks.  This works, but blocks for
 -- awhile when the data received is less than bufferSize.  Also chunk size
 -- seems to depend on the server, not always filling the bufferSize.
-recvAllChunks :: Socket -> Int64 -> IO [BL.ByteString]
-recvAllChunks sock bufferSize = do
-  chunk <- BSL.recv sock bufferSize
-  -- putStrLn $ "chunk size: " ++ (show $ BL.length chunk)
-  if BL.length chunk == 0
-    then return [chunk]
-    else do
-      chunks <- recvAllChunks sock bufferSize
-      return (chunk : chunks)
+-- recvAllChunks :: Socket -> Int64 -> IO [BL.ByteString]
+-- recvAllChunks sock bufferSize = do
+--   chunk <- BSL.recv sock bufferSize
+--   -- putStrLn $ "chunk size: " ++ (show $ BL.length chunk)
+--   if BL.length chunk == 0
+--     then return [chunk]
+--     else do
+--       chunks <- recvAllChunks sock bufferSize
+--       return (chunk : chunks)
 
 -- | Main entry point and future location of event handler.
 main :: IO ()
@@ -53,31 +52,35 @@ main = do
     [] -> putStrLn "No URL specified"
     url:_ -> do
       putStrLn $ "Navigating to: " ++ url
-      let parsedUrl = parseURI url
-          scheme = (fromMaybe "Invalid URL" $ (dropLastColon . uriScheme) <$> parsedUrl)
-          host = maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
-          path = (fromMaybe "Invalid URL" $
-                  (('/' :) . DL.intercalate "/" . pathSegments) <$> parsedUrl)
-      -- putStrLn $ "URI Scheme: " ++ scheme
-      -- putStrLn $ "Host: " ++ host
-      -- putStrLn $ "Path: " ++ path
+      r <- get url
+      putStrLn (show (r ^. responseBody))
+      -- putStrLn (r ^. responseBody . key "url" . _String)
 
-      -- Create network connection to host.
-      (sock, addr) <- createSocket scheme host
-      connect sock (addrAddress addr)
-      let request = "GET " ++ path ++ " HTTP/1.1\r\nHost: " ++ host ++ "\r\n\r\n"
-      sendAll sock (BS.pack request)
-      response <- recvAllChunks sock 4096
-      close sock
+      -- let parsedUrl = parseURI url
+      --     scheme = (fromMaybe "Invalid URL" $ (dropLastColon . uriScheme) <$> parsedUrl)
+      --     host = maybe "Invalid URL" uriRegName (uriAuthority =<< parseURI url)
+      --     path = (fromMaybe "Invalid URL" $
+      --             (('/' :) . DL.intercalate "/" . pathSegments) <$> parsedUrl)
+      -- -- putStrLn $ "URI Scheme: " ++ scheme
+      -- -- putStrLn $ "Host: " ++ host
+      -- -- putStrLn $ "Path: " ++ path
 
-      -- Handle response content.
-      let servResp = word8ArrayToString $ BL.unpack $ mconcat response
-      let linesList = lines servResp
-      let [httpVer, statusCode, statusMsg, date, server, lastMod, acceptRanges] = take 7 linesList
-      let [httpVersion, status, explanation] = take 3 $ words httpVer
-      let content = unlines $ drop 8 linesList
-      mapM_ putStrLn [httpVersion, status, explanation, statusCode, statusMsg, date, server, lastMod, acceptRanges]
-      -- putStrLn content
+      -- -- Create network connection to host.
+      -- (sock, addr) <- createSocket scheme host
+      -- connect sock (addrAddress addr)
+      -- let request = "GET " ++ path ++ " HTTP/1.1\r\nHost: " ++ host ++ "\r\n\r\n"
+      -- sendAll sock (BS.pack request)
+      -- response <- recvAllChunks sock 4096
+      -- close sock
+
+      -- -- Handle response content.
+      -- let servResp = word8ArrayToString $ BL.unpack $ mconcat response
+      -- let linesList = lines servResp
+      -- let [httpVer, statusCode, statusMsg, date, server, lastMod, acceptRanges] = take 7 linesList
+      -- let [httpVersion, status, explanation] = take 3 $ words httpVer
+      -- let content = unlines $ drop 8 linesList
+      -- mapM_ putStrLn [httpVersion, status, explanation, statusCode, statusMsg, date, server, lastMod, acceptRanges]
+      -- -- putStrLn content
 
 
 -- testUrl1 = "http://www.example.com:8080/path/to/page?query=value#fragment"
