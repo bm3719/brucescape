@@ -79,15 +79,18 @@ executable brucescape
                       ViewPatterns
 
     -- Other library packages from which modules are imported.
-    build-depends:    base            ^>= 4.16.4.0
+    build-depends:    aeson            >=0.7.0.5
+                    , base            ^>= 4.16.4.0
                     , brick            >= 1.5 && < 1.10
                     , bytestring       >= 0.11.3.1
+                    , http-client      >= 0.7.13.1
                     , http-types       >= 0.12 && < 0.13
                     , lens             >= 5.2.2
                     , lens-aeson       >= 1.2.2
                     , text
+                    , vty              >= 5.38
+                    , word-wrap        >= 0.5
                     , wreq             >= 0.5.0.1
-                    , aeson            >=0.7.0.5
 
     -- Directories containing source files.
     hs-source-dirs:   app
